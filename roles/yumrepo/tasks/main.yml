@@ -1,0 +1,49 @@
+---
+- name: Ensure yum-utils and rsync are installed
+  package:
+    name:
+      - yum-utils  # Required for yum-config-manager
+      - rsync      # Required for efficient file synchronization
+    state: present
+
+- name: Copy local repository files to target system
+  ansible.posix.synchronize:
+    src: ../files/repo/    # Source directory containing repo files
+    dest: /home/devops/repo/  # Destination directory on managed node
+    mode: push             # Push files from control node to managed node
+    recursive: yes         # Copy directories recursively
+  register: sync_result    # Store outcome for conditional execution
+
+- name: Add local YUM repository configuration
+  ansible.builtin.yum_repository:
+    name: local_repo       # Repository ID
+    description: local ansible custom repo  # Human-readable description
+    file: local_repo       # Creates /etc/yum.repos.d/local_repo.repo
+    baseurl: file:///home/devops/repo  # Local file path URI
+    gpgcheck: 0            # Disable GPG checking for local repo
+    enabled: 1             # Ensure repo is enabled
+  when: sync_result is succeeded  # Only execute if file copy succeeded
+
+- name: Get names of all currently enabled repositories
+  shell: "yum repolist enabled | awk 'NR>6 {print $1}'"
+  register: repo_names     # Stores list of enabled repositories
+  changed_when: false      # This is a read-only operation
+
+- name: Disable all external repositories (except local_repo)
+  shell: "yum-config-manager --disable {{ item }}"
+  loop: "{{ repo_names.stdout_lines }}"  # Loop through enabled repos
+  when: item not in ['local_repo']       # Skip our local repo
+  register: disable_result
+
+- name: Create backup of original repository configuration
+  copy:
+    dest: /etc/yum.repos.d/repos_enabled.bck  # Backup file location
+    content: "{{ repo_names.stdout_lines }}"    # Contents of backup
+  when: disable_result is succeeded             # Only if disable worked
+
+- name: Clean YUM/DNF cache and rebuild metadata
+  shell: |
+    dnf clean all     # Clean all cached packages
+    dnf makecache     # Rebuild repository metadata cache
+  args:
+    warn: false       # Suppress shell warnings
