@@ -1,0 +1,33 @@
+---
+# Task to create multiple user accounts
+- name: create users
+  user:
+    name: "{{ item }}"  # Creates user from items in 'users' list
+    state: present      # Ensures user exists
+  loop: "{{ users }}"   # Iterates over 'users' variable
+
+# Task to configure SSH public key authentication
+- name: Set password-less SSH
+  ansible.posix.authorized_key:
+    user: "{{ item }}"  # User to add key for
+    state: present      # Ensures key is present
+    key: "{{ lookup('file', '/home/devops/.ssh/id_rsa.pub') }}"  # Public key content
+  loop: "{{ users }}"   # Applies to all users in list
+
+# Task to restrict SSH access by groups
+- name: Restrict SSH access to a specific group
+  copy:
+    dest: /etc/ssh/sshd_config.d/custom.conf  # Custom SSH config file
+    content: |
+      DenyGroups qa  # Denies SSH access for 'qa' group
+    owner: root      # Ensures root ownership
+    group: root      # Ensures root group
+    mode: "0644"     # Sets proper permissions (rw-r--r--)
+  notify: restart_ssh  # Triggers SSH service restart
+
+# Handler to restart SSH service when notified
+- name: restart_ssh
+  service:
+    name: sshd        # Service name (SSH daemon)
+    state: restarted  # Fully restarts service
+    enabled: yes      # Ensures service starts at boot

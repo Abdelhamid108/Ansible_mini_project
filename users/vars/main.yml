@@ -1,0 +1,6 @@
+---
+# List of user accounts to be managed
+users:
+  - dev   # Development team user
+  - ops   # Operations team user
+  - qa    # Quality Assurance team user
