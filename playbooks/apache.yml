@@ -1,0 +1,13 @@
+---
+# Apache HTTP Server Installation and Configuration Playbook
+- name: Install and configure Apache on RHEL-based servers
+  hosts: all                  # Targets all hosts in inventory (filter with --limit if needed)
+  gather_facts: no            # Explicitly disables fact gathering for performance
+                              # Note: Ensure 'apache' role doesn't require gathered facts
+  roles:
+    - apache                  # Reference to the apache role containing all installation 
+                              # and configuration tasks for httpd service
+
+  # Recommended execution:
+  # ansible-playbook -i inventory.yml playbook.yml --limit "rhel_servers"
+  # To target only RHEL-based systems from your inventory

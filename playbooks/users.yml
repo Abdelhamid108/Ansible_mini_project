@@ -1,0 +1,13 @@
+---
+# Playbook for user management and SSH security configuration
+- name: Manage users and secure SSH access
+  hosts: all                   # Applies to all hosts in inventory
+  vars_files:
+    - ../vault/main.yml         # Loads sensitive variables from Ansible Vault
+  roles:
+    - users                     # Executes the 'users' role for account/SSH management
+  gather_facts: no              # Disables fact gathering (ensure role doesn't need facts)
+  
+  # Note: When using vault-protected variables:
+  # 1. Run playbook with: ansible-playbook --ask-vault-pass
+  # 2. Or use vault password file with: --vault-password-file

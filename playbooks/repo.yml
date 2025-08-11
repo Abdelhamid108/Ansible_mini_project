@@ -1,0 +1,8 @@
+---
+# Playbook for configuring offline package management
+- name: Prepare package management without internet access
+  hosts: all                  # Targets all inventory hosts
+  gather_facts: no            # Disables fact gathering for faster execution
+                              # Note: Required facts should be gathered in role if needed
+  roles:
+    - yumrepo                 # Executes the yumrepo role for offline repo configuration

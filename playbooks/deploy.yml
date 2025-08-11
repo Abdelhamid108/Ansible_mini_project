@@ -1,0 +1,7 @@
+---
+# Main playbook for Node.js application deployment
+- name: Deploy Node.js application
+  hosts: all               # Targets all hosts in inventory
+  gather_facts: no         # Disables fact gathering for faster execution
+  roles:
+    - deploy               # Executes the 'deploy' role
