@@ -1,0 +1,4 @@
+# Examples for secrets vars
+#
+# api_key: aFefadawda
+# ansible_ssh_pass: key

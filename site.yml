@@ -1,0 +1,18 @@
+---
+# Web Server Automation Project
+# Automates deployment of Apache web server with applications and users
+
+- name: Gather system information
+  hosts: all
+  gather_facts: yes  # Collects system details needed by subsequent plays
+  tasks: []          # Pure fact gathering play
+
+# Infrastructure Configuration
+- import_playbook: ./playbooks/repo.yml    # 1. Configure local package repositories
+- import_playbook: ./playbooks/apache.yml  # 2. Install and secure Apache web server
+
+# Application Deployment
+- import_playbook: ./playbooks/deploy.yml  # 3. Deploy Node.js applications
+
+# Access Control
+- import_playbook: ./playbooks/users.yml   # 4. Configure user accounts and SSH access
