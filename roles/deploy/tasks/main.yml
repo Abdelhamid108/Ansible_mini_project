@@ -1,0 +1,63 @@
+- name: Create application user with specified home directory
+  user:
+    name: myappuser
+    create_home: yes
+    home: "{{ home_path }}"
+    shell: /bin/bash
+
+- name: Transfer application files from local to remote server
+  ansible.posix.synchronize:
+    src: ../files/apps/
+    dest: "{{ home_path }}/apps/"
+    mode: push
+    recursive: yes
+  notify:
+    - create_script
+    - run_script
+
+- name: Ensure correct permissions are set for application files
+  file:
+    path: "{{ home_path }}"
+    owner: myappuser
+    group: myappuser
+    recurse: true
+
+- name: Set SELinux boolean to allow HTTPD network connections persistently
+  ansible.posix.seboolean:
+    name: httpd_can_network_connect
+    state: true
+    persistent: true
+
+- name: Ensure required packages (node.js and nginx) are installed
+  yum:
+    name:
+      - nodejs
+      - nginx
+    state: present
+  register: pkg_install_result
+
+- name: Disable and stop httpd service if package installation succeeded
+  service:
+    name: httpd
+    state: stopped
+    enabled: no
+  when: pkg_install_result is succeeded
+
+- name: Install PM2 process manager globally via npm
+  community.general.npm:
+    name: pm2
+    state: present
+    global: true
+  when: pkg_install_result is succeeded
+
+- name: Configure Nginx by deploying configuration templates
+  template:
+    src: ../templates/nginx_conf.j2
+    dest: /etc/nginx/conf.d/{{ ansible_nodename }}_{{ item.name }}.conf
+    owner: root
+    group: root
+    mode: "0644"
+    # Note: Uncomment the following line to enable configuration validation
+    # validate: /usr/sbin/nginx -t -c %s
+  loop: "{{ apps_configs }}"
+  notify: restart_nginx

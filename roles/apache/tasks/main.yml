@@ -1,0 +1,25 @@
+- name: Install Apache HTTP Server
+  yum:
+    name: httpd
+    state: present
+  register: install_result
+  notify: restart_apache
+
+- name: Deploy custom index.html from template
+  template:
+    src: ../templates/main.j2
+    dest: /var/www/html/index.html
+    owner: apache
+    group: apache
+    mode: "0644"  # Added recommended file permissions
+  when: install_result is succeeded  # Simplified condition
+  notify: restart_apache
+
+- name: Configure firewall to allow HTTP traffic
+  firewalld:
+    port: 80/tcp
+    permanent: true
+    state: enabled
+    immediate: true
+  when: install_result is succeeded  # Simplified condition
+  notify: restart_apache

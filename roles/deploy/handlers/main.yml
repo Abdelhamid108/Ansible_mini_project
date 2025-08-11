@@ -1,0 +1,25 @@
+---
+# Handlers for application deployment
+
+- name: restart_nginx
+  service:
+    name: nginx
+    state: restarted
+    enabled: yes
+  # This will restart Nginx and ensure it's enabled on boot
+  # Triggered by configuration changes
+
+- name: create_script
+  template:
+    src: ../templates/run_script.j2
+    dest: /tmp/deploy_script.sh
+    mode: "0755"
+  # Creates the deployment script from template
+  # Sets executable permissions (rwxr-xr-x)
+
+- name: run_script
+  shell:
+    cmd: sudo bash /tmp/deploy_script.sh
+  # Executes the generated deployment script
+  # Runs with sudo privileges
+  # Should be notified after create_script handler

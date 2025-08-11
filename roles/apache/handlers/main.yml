@@ -1,0 +1,13 @@
+---
+- name: restart_apache
+  service:
+    name: httpd
+    state: restarted
+    enabled: yes
+  # This handler will:
+  # 1. Restart the Apache service immediately
+  # 2. Ensure Apache starts automatically on system boot
+  # Typically notified by:
+  # - Configuration changes
+  # - Package updates
+  # - File deployments

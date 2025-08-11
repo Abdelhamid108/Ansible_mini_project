@@ -1,0 +1,22 @@
+---
+# Configuration variables for deploy role
+
+# Base home directory for the application user
+home_path: /home/myappuser
+
+# List of application configurations
+apps_configs:
+  - name: node1
+    nginx_port: 80
+    app_path: "{{ home_path }}/apps/node1_app"
+    port: 3000
+    server_name: nodjs.net
+    script_path: "{{ home_path }}/apps/node1_app/app/server.js"
+
+  # Example of a second node configuration (currently commented out)
+  # - name: node2
+  #   nginx_port: 8080
+  #   port: 46754
+  #   app_path: "{{ home_path }}/apps/node2_app"
+  #   server_name: nodjs.org
+  #   script_path: "{{ home_path }}/apps/node1_app/app/server.js"
