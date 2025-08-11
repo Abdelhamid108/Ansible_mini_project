@@ -45,5 +45,4 @@
   shell: |
     dnf clean all     # Clean all cached packages
     dnf makecache     # Rebuild repository metadata cache
-  args:
-    warn: false       # Suppress shell warnings
+
