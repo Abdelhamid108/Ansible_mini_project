@@ -52,6 +52,8 @@ ansible-mini-project/
 │
 └── README.md                  # This documentation
 ```
+📊 Architecture Diagram
+![Uploading deepseek_mermaid_20250828_c8957a.png…]()
 
 ---
 
