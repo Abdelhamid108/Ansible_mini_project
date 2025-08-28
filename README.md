@@ -52,6 +52,7 @@ ansible-mini-project/
 │
 └── README.md                  # This documentation
 ```
+
 📊 Architecture Diagram
 ![Alt text](architecture-diagram.png)
 ---
