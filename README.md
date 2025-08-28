@@ -53,8 +53,7 @@ ansible-mini-project/
 └── README.md                  # This documentation
 ```
 📊 Architecture Diagram
-https://architecture-diagram.png
-
+![Alt text](architecture-diagram.png)
 ---
 
 ## 📦 Roles Overview
